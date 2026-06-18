@@ -1,0 +1,9 @@
+#ifndef CLAY_BSD
+#define CLAY_BSD
+
+#include <sys/types.h>
+
+size_t strlcpy(char *, const char *, size_t);
+size_t strlcat(char *, const char *, size_t);
+
+#endif

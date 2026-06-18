@@ -1,8 +1,9 @@
 project('clay', 'c')
 
 sdl3_dep = dependency('sdl3')
+sdl3_image_dep = dependency('sdl3_image')
 
-executable('clay', 'src/main.c',
+executable('clay', ['src/main.c', 'src/bsd.c'],
 		   win_subsystem: 'windows',
-		   dependencies: [sdl3_dep],
+		   dependencies: [sdl3_dep, sdl3_image_dep],
 		   install: false)
