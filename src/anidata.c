@@ -2,6 +2,7 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 #include <SDL3/SDL_render.h>
 #include <SDL3/SDL_filesystem.h>
@@ -67,7 +68,18 @@ bool drawframe(SDL_Renderer *ren, anidata *data, const float x,
       data->cframe %= data->frames;
   }
 
-  SDL_FRect srcr = modrect(&data->rect, data->cframe, 0);
+  SDL_FRect srcr = modrect(&data->rect, data->cframe % data->cols, data->cframe / data->cols);
+  SDL_FRect dstr = transrect(&data->rect, x, y);
+
+  return SDL_RenderTexture(ren, data->sheet->texture, &srcr, &dstr);
+}
+
+bool drawaframe(SDL_Renderer *ren, anidata *data, const float x,
+	       const float y, const uint32 frame) {
+
+  SDL_FRect srcr = modrect(&data->rect,
+			   frame >= data->frames ? (data->frames - 1) % data->cols : frame % data->cols,
+			   frame >= data->frames ? (data->frames - 1) / data->cols : frame / data->cols);
   SDL_FRect dstr = transrect(&data->rect, x, y);
 
   return SDL_RenderTexture(ren, data->sheet->texture, &srcr, &dstr);

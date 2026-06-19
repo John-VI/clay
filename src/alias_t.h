@@ -5,4 +5,4 @@
 
 typedef uint32_t uint32;
 
-#endif CLAY_ALIAS_T
+#endif 

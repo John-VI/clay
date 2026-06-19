@@ -16,6 +16,7 @@ typedef struct spritesheet spritesheet;
 struct anidata {
   /* const */ char	*name;
   /* const */ uint32	 frames;
+  /* const */ uint32     cols;
   /* const */ SDL_FRect	 rect;
   /* const */ char	 flags;
   /* const */ uint32	 delay;
@@ -31,6 +32,8 @@ spritesheet *loadsheet(SDL_Renderer *, const char *);
 
 bool drawframe(SDL_Renderer *, anidata *, const float, const float,
 	       const uint32);
+
+bool drawaframe(SDL_Renderer *, anidata *, const float, const float, const uint32);
 
 int destroyanidata(anidata *);
 

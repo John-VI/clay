@@ -13,6 +13,7 @@
 #include "bsd.h"
 #include "anidata.h"
 #include "alias_t.h"
+#include "text.h"
 
 int main(int argc, char *argv[]) {
   /*** EPIGENICS ***/
@@ -77,12 +78,13 @@ int main(int argc, char *argv[]) {
   font = malloc(sizeof(anidata));
   font->name = "Compac";
   font->frames = 96;
+  font->cols = 96;
   font->rect.x = 0;
   font->rect.y = 0;
   font->rect.w = 8;
   font->rect.h = 16;
   font->flags = 0;
-  font->delay = 100;
+  font->delay = 500;
   font->ticks = 0;
   font->cframe = 0;
   font->sheet = compac;
@@ -97,6 +99,10 @@ int main(int argc, char *argv[]) {
 
     SDL_RenderTexture(ren, frog, NULL, NULL);
     drawframe(ren, font, 0, 0, 1);
+    scrputs(ren, font, "\nText processing.\n", 0, 16);
+    for (char i = 0; i < 96; i++)
+      scrputc(ren, font, i + ' ', i * 8, 32);
+    
     SDL_RenderPresent(ren);
   }
 
