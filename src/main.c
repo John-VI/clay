@@ -19,18 +19,19 @@ int main(int argc, char *argv[]) {
   /*** EPIGENICS ***/
   const SDL_InitFlags basesubsystems =
     SDL_INIT_AUDIO | SDL_INIT_VIDEO | SDL_INIT_EVENTS;
-  const char progtitle[] = "Uncharacterized Clay";
-  const char progid[] = "CLAY1";
+  
+  const char	 progtitle[] = "Uncharacterized Clay";
+  const char	 progid[]    = "CLAY1";
 
-  SDL_Window *win;
-  SDL_Renderer *ren;
-  SDL_Event e;
+  SDL_Window	*win;
+  SDL_Renderer	*ren;
+  SDL_Event	 e;
 
-  SDL_Texture *frog;
-  char *frogfullpath;
-  size_t frogfullpathlen;
-  spritesheet *compac;
-  anidata *font;
+  SDL_Texture	*frog;
+  char		*frogfullpath;
+  size_t	 frogfullpathlen;
+  spritesheet	*compac;
+  anidata	*font;
 
   SDL_SetHint(SDL_HINT_APP_NAME, progtitle);
   SDL_SetHint(SDL_HINT_APP_ID, progid);
@@ -76,18 +77,18 @@ int main(int argc, char *argv[]) {
   }
 
   font = malloc(sizeof(anidata));
-  font->name = "Compac";
+  font->name   = "Compac";
   font->frames = 96;
-  font->cols = 96;
+  font->cols   = 96;
   font->rect.x = 0;
   font->rect.y = 0;
   font->rect.w = 8;
   font->rect.h = 16;
-  font->flags = 0;
-  font->delay = 500;
-  font->ticks = 0;
+  font->flags  = 0;
+  font->delay  = 500;
+  font->ticks  = 0;
   font->cframe = 0;
-  font->sheet = compac;
+  font->sheet  = compac;
   compac->refcount++;
 
   /*** LIFE ***/

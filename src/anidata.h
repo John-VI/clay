@@ -6,9 +6,15 @@
 
 #include "alias_t.h"
 
+struct anidata;
+
 struct spritesheet {
-  SDL_Texture *texture;
-  int refcount;
+  SDL_Texture		*texture;
+  char			*name;
+  int			 refcount;
+  int			 anicount;
+
+  struct anidata	 anis[];
 };
 
 typedef struct spritesheet spritesheet;
@@ -35,7 +41,7 @@ bool drawframe(SDL_Renderer *, anidata *, const float, const float,
 
 bool drawaframe(SDL_Renderer *, anidata *, const float, const float, const uint32);
 
-int destroyanidata(anidata *);
+int unlinksheet(spritesheet *);
 
 // destroyspritesheet() is hidden since destroyanidata should do it itself.
 

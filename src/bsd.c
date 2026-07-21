@@ -17,8 +17,13 @@
  */
 
 #include "bsd.h"
+
 #include <sys/types.h>
 #include <string.h>
+#include <errno.h>
+#include <ctype.h>
+
+#include <SDL3/SDL_filesystem.h>
 
 /*
  * Appends src to string dst of size dsize (unlike strncat, dsize is the
@@ -83,4 +88,116 @@ strlcpy(char *dst, const char *src, size_t dsize)
 	}
 
 	return(src - osrc - 1);	/* count does not include NUL */
+}
+
+char *
+strsep(char **stringp, const char *delim)
+{
+	char *s;
+	const char *spanp;
+	int c, sc;
+	char *tok;
+
+	if ((s = *stringp) == NULL)
+		return (NULL);
+	for (tok = s;;) {
+		c = *s++;
+		spanp = delim;
+		do {
+			if ((sc = *spanp++) == c) {
+				if (c == 0)
+					s = NULL;
+				else
+					s[-1] = 0;
+				*stringp = s;
+				return (tok);
+			}
+		} while (sc != 0);
+	}
+	/* NOTREACHED */
+}
+
+/* Anyway */
+
+ssize_t
+getdelim(char ** restrict lineptr, size_t * restrict n, int delimiter, FILE * restrict stream) {
+  // This is POSIXly completely wrong btw.
+  size_t size;
+  char c;
+  ssize_t i;
+
+  if ((!n || *n) && *lineptr) {
+    errno = EINVAL;
+    return -1; //If you want to give me a buffer but not the size then you can fk right off.
+  }
+  
+  if (n && *n)
+    size = n;
+  else
+    size = 55; // The average line length for text file in my documents folder is 49.
+
+  if (!*lineptr)
+    *lineptr = malloc(sizeof(char) * size);
+  // If lineptr isn't real then we make it ourselves according to n, assuming that exists.
+  // if lineptr is real then n is assumed to be its size. Important: Don't fk this up.
+
+  for (i = 0; (c = getc(stream)) != EOF && ((*lineptr)[i] = c) != delimiter; i++) {
+    if (i >= size - 1) { // We still need room for the \0.
+      size *= 2;
+      realloc(*lineptr, size);
+    }
+  }
+
+  (*lineptr)[i] = '\0';
+
+  if (n)
+    *n = size;
+  // Tell them our new buffer size if they care to know.
+
+  return i;
+}
+
+ssize_t
+getline(char ** restrict lineptr, size_t * restrict n, FILE * restrict stream) {
+  return getdelim(lineptr, n, '\n', stream); // This c sh easy.
+}
+
+char
+*chomp(const char *str) {
+  if (!str) {
+    errno = EINVAL;
+    return NULL; // F off
+  }
+
+  size_t len = strlen(str);
+
+  if (len == 0)
+    return calloc(1, sizeof(char));
+
+  char *strptr = str;
+  char *endptr = str + len;
+
+  while (isspace(*strptr))
+    strptr++;
+
+  while (endptr > strptr && isspace(*endptr))
+    endptr--;
+
+  if (endptr <= strptr)
+    return calloc(1, sizeof(char));
+  
+  char *out = malloc(endptr - strptr + 1);
+  memcpy(out, strptr, endptr - strptr);
+  out[endptr-strptr] = '\0';
+
+  return out;
+}
+
+char
+*elfypath(const char *path) {
+  const size_t pathlen = strlen(SDL_GetBasePath()) + strlen(path) + 1;
+  *dest = malloc(pathlen);
+  strlcpy(fullpath, SDL_GetBasePath(), pathlen);
+  strlcat(fullpath, path, pathlen);
+  return fullpath;
 }

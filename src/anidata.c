@@ -12,13 +12,8 @@
 #include "alias_t.h"
 
 spritesheet *loadsheet(SDL_Renderer *ren, const char *path) {
-  const size_t pathlen = strlen(SDL_GetBasePath()) + strlen(path) + 1;
-  char *fullpath = malloc(pathlen);
-
-  strlcpy(fullpath, SDL_GetBasePath(), pathlen);
-  strlcat(fullpath, path, pathlen);
+  const char *fullpath = elfypath(path);
   SDL_Texture *tex = IMG_LoadTexture(ren, fullpath);
-
   free(fullpath);
 
   if (!tex)
