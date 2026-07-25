@@ -14,4 +14,6 @@ char *chomp(const char *); // Yeah this totally exists on BSD. Don't you trust m
 
 char *elfypath(const char *);
 
+bool blankp(const char *);
+
 #endif

@@ -18,6 +18,7 @@
 
 #include "bsd.h"
 
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
@@ -206,5 +207,8 @@ char
 
 bool
 blankp(const char *str) {
-	
+	while (*(str))
+		if (!isspace(*str++))
+			return false;
+	return true;
 }
