@@ -14,7 +14,7 @@ struct spritesheet {
   int			 refcount;
   int			 anicount;
 
-  struct anidata	 anis[];
+  struct anidata	*anis;
 };
 
 typedef struct spritesheet spritesheet;

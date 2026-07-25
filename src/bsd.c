@@ -18,6 +18,8 @@
 
 #include "bsd.h"
 
+#include <stdio.h>
+#include <stdlib.h>
 #include <sys/types.h>
 #include <string.h>
 #include <errno.h>
@@ -196,8 +198,13 @@ char
 char
 *elfypath(const char *path) {
   const size_t pathlen = strlen(SDL_GetBasePath()) + strlen(path) + 1;
-  *dest = malloc(pathlen);
+  char *fullpath = malloc(pathlen);
   strlcpy(fullpath, SDL_GetBasePath(), pathlen);
   strlcat(fullpath, path, pathlen);
   return fullpath;
+}
+
+bool
+blankp(const char *str) {
+	
 }
