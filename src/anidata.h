@@ -20,15 +20,15 @@ struct spritesheet {
 typedef struct spritesheet spritesheet;
 
 struct anidata {
-  /* const */ char	*name;
-  /* const */ uint32	 frames;
-  /* const */ uint32     cols;
-  /* const */ SDL_FRect	 rect;
-  /* const */ char	 flags;
-  /* const */ uint32	 delay;
+ /* const */ char	       *name;
+ /* const */ uint32	     frames;
+ /* const */ uint32      cols;
+ /* const */ SDL_FRect	 rect;
+ /* const */ char	       flags;
+ /* const */ uint32	     delay;
 
-  uint32		 ticks;
-  uint32		 cframe;
+  uint32		    ticks;
+  uint32		    cframe;
   spritesheet		*sheet;
 };
 
