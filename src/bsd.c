@@ -129,13 +129,16 @@ getdelim(char ** restrict lineptr, size_t * restrict n, int delimiter, FILE * re
   char c;
   ssize_t i;
 
-  if ((!n || *n) && *lineptr) {
+  if (feof(stream))
+    return -1;
+
+  if ((!n || !*n) && *lineptr) {
     errno = EINVAL;
     return -1; //If you want to give me a buffer but not the size then you can fk right off.
   }
   
   if (n && *n)
-    size = n;
+    size = *n;
   else
     size = 55; // The average line length for text file in my documents folder is 49.
 
@@ -147,7 +150,7 @@ getdelim(char ** restrict lineptr, size_t * restrict n, int delimiter, FILE * re
   for (i = 0; (c = getc(stream)) != EOF && ((*lineptr)[i] = c) != delimiter; i++) {
     if (i >= size - 1) { // We still need room for the \0.
       size *= 2;
-      realloc(*lineptr, size);
+      *lineptr = realloc(*lineptr, size);
     }
   }
 

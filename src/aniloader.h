@@ -1,17 +1,17 @@
 #ifndef CLAY_ANILOADER
 #define CLAY_ANILOADER
 
-#include <stdio.h>
+//#include <stdio.h>
+
+#include <SDL3/SDL_render.h>
 
 #include "anidata.h"
 #include "alias_t.h"
 
-const uint32 loadererrint();
+uint32 loadererrint();
 const char *loadererrstr();
 void loaderclrerr();
 
-int ani_readfile(const char *);
-bool ani_procface(FILE *, spritesheet *);
-bool ani_procbust(FILE *, anidata *);
+spritesheet *loadanisheet(const char *fullpath, SDL_Renderer *ren);
 
 #endif

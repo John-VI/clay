@@ -38,17 +38,28 @@ cons *listpush(cons **list, void *new) {
   return ncons;
 }
 
+uint32 listlen(cons *list) {
+  uint32 i = 0;
+  while (list) {
+    i++;
+    list = list->cdr;
+  }
+
+  return i;
+}
+
 void *delnthpop(cons **list, unsigned int i) {
-  if (!list || !(*list))
+  if (!list || !(*list) || i >= listlen(*list))
     return NULL;
 
   void *dangling;
   void *next;
     
-  if (!i || !(*list)->cdr) {
+  if (!i) {
     dangling = (*list)->car;
+    cons *ncell = (*list)->cdr;
     free(*list);
-    *list = NULL;
+    *list = ncell;
     return dangling;
   } else {
     cons *cell = nth(*list, i - 1);
@@ -62,21 +73,21 @@ void *delnthpop(cons **list, unsigned int i) {
 
 void princ(const cons *list) {
   if (!list) {
-    puts("NULL");
+    fputs("NULL", stderr);
     return;
   }
 
   int tab = 0;
   while (1) {
     for (int i = 0; i < tab; i++)
-      printf("  ");
+      fprintf(stderr, "  ");
 
     if (list->cdr) {
-      printf("(0x%.5X\n" ? list->car : "(NULL\n", list->car);
+      fprintf(stderr, list->car ? "(%p\n" : "(NULL\n", list->car);
       list = list->cdr;
       tab++;
     } else {
-      printf("(0x%.5X)\n" ? list->car : "(NULL)\n", list->car);
+      fprintf(stderr, list->car ? "(%p)\n"  : "(NULL)\n", list->car);
       break;
     }
   }
@@ -84,21 +95,21 @@ void princ(const cons *list) {
 
 void prin1(const cons *list) {
   if (!list) {
-    puts("NULL");
+    fputs("NULL", stderr);
     return;
   }
 
   int tab = 0;
   while (1) {
     for (int i = 0; i < tab; i++)
-      printf("  ");
+      fprintf(stderr, "  ");
 
     if (list->cdr) {
-      printf("(0x%X\n", list->car);
+      fprintf(stderr, "(%p\n", list->car);
       list = list->cdr;
       tab++;
     } else {
-      printf("(0x%X)\n", list->car);
+      fprintf(stderr, "(%p)\n", list->car);
       break;
     }
   }

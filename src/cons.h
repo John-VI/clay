@@ -18,4 +18,6 @@ cons *nucons(void *, void *);
 cons *listpush(cons **, void *);
 void *delnthpop(cons **, unsigned int);
 
+uint32 listlen(cons *);
+
 #endif

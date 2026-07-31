@@ -1,0 +1,9 @@
+sheetname test
+sheettexture hey.png
+
+name frog
+frames 1
+columns 1
+rectangle 0 0 797 667
+flags 0
+delay 0

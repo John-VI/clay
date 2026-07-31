@@ -10,9 +10,8 @@
 #include <SDL3_image/SDL_image.h>
 #include <SDL3/SDL_filesystem.h>
 
-#include "bsd.h"
+#include "aniloader.h"
 #include "anidata.h"
-#include "alias_t.h"
 #include "text.h"
 
 int main(int argc, char *argv[]) {
@@ -27,9 +26,7 @@ int main(int argc, char *argv[]) {
   SDL_Renderer	*ren;
   SDL_Event	 e;
 
-  SDL_Texture	*frog;
-  char		*frogfullpath;
-  size_t	 frogfullpathlen;
+  spritesheet *frog;
   spritesheet	*compac;
   anidata	*font;
 
@@ -54,17 +51,20 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
-  frogfullpathlen = strlen(SDL_GetBasePath()) + strlen("hey.png") + 1;
-  frogfullpath = malloc(frogfullpathlen);
-  strlcpy(frogfullpath, SDL_GetBasePath(), frogfullpathlen);
-  strlcat(frogfullpath, "hey.png", frogfullpathlen);
-  frog = IMG_LoadTexture(ren, frogfullpath);
-  free(frogfullpath);
+  // frogfullpathlen = strlen(SDL_GetBasePath()) + strlen("hey.png") + 1;
+  // frogfullpath = malloc(frogfullpathlen);
+  // strlcpy(frogfullpath, SDL_GetBasePath(), frogfullpathlen);
+  // strlcat(frogfullpath, "hey.png", frogfullpathlen);
+  // frog = IMG_LoadTexture(ren, frogfullpath);
+  // free(frogfullpath);
 
+  frog = loadanisheet("test.anis", ren);
   if (!frog) {
-    fprintf(stderr, "CRITICAL FROG ERROR!\nSDL_GetError():\n%s\n", SDL_GetError());
+    fprintf(stderr,
+            "CRITICAL FROG ERROR!\nSDL_GetError():\n%s\nloadererrstr():\n%s\n",
+            SDL_GetError(), loadererrstr());
     SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "CRITICAL FROG ERROR!",
-			     SDL_GetError(), NULL);
+                             SDL_GetError(), NULL);
     return 1;
   }
 
@@ -86,8 +86,8 @@ int main(int argc, char *argv[]) {
   font->rect.h = 16;
   font->flags  = 0;
   font->delay  = 500;
-  font->ticks  = 0;
-  font->cframe = 0;
+  // font->ticks  = 0;
+  // font->cframe = 0;
   font->sheet  = compac;
   compac->refcount++;
 
@@ -98,8 +98,14 @@ int main(int argc, char *argv[]) {
       break;
     }
 
-    SDL_RenderTexture(ren, frog, NULL, NULL);
-    drawframe(ren, font, 0, 0, 1);
+    SDL_SetRenderDrawColor(ren, 0, 0, 0, 255);
+    SDL_RenderClear(ren);
+
+    SDL_RenderTexture(ren, frog->texture, NULL, NULL);
+
+    drawaframe(ren, frog->anis, 0, 0, 0);
+    drawaframe(ren, frog->anis+1, 0, 0, 0);
+    
     scrputs(ren, font, "\nText processing.\n", 0, 16);
     for (char i = 0; i < 96; i++)
       scrputc(ren, font, i + ' ', i * 8, 32);
@@ -108,8 +114,8 @@ int main(int argc, char *argv[]) {
   }
 
   /*** DEATH ***/
-  SDL_DestroyTexture(frog);
-  destroyanidata(font);
+  unlinksheet(frog);
+  // destroyanidata(font);
   
   SDL_DestroyRenderer(ren);
   SDL_DestroyWindow(win);

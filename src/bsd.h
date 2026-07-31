@@ -1,6 +1,8 @@
 #ifndef CLAY_BSD
 #define CLAY_BSD
 
+#include <stdio.h>
+#include <stdbool.h>
 #include <sys/types.h>
 
 size_t strlcpy(char *, const char *, size_t);

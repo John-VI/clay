@@ -27,8 +27,8 @@ struct anidata {
  /* const */ char	       flags;
  /* const */ uint32	     delay;
 
-  uint32		    ticks;
-  uint32		    cframe;
+  // uint32		    ticks;
+  // uint32		    cframe;
   spritesheet		*sheet;
 };
 
