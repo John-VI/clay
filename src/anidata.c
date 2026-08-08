@@ -1,47 +1,16 @@
 #include "anidata.h"
 
-#include <string.h>
 #include <stdlib.h>
-#include <stdio.h>
 
 #include <SDL3/SDL_render.h>
 #include <SDL3/SDL_filesystem.h>
 #include <SDL3_image/SDL_image.h>
 
-#include "bsd.h"
 #include "alias_t.h"
-
-spritesheet *loadsheet(SDL_Renderer *ren, const char *path) {
-  const char *fullpath = elfypath(path);
-  SDL_Texture *tex = IMG_LoadTexture(ren, fullpath);
-  free(fullpath);
-
-  if (!tex)
-    return NULL;
-
-  spritesheet *ret = malloc(sizeof(spritesheet));
-  ret->refcount = 0;
-  ret->texture = tex;
-  
-  return ret;
-}
 
 void destroyspritesheet(spritesheet *sheet) {
   SDL_DestroyTexture(sheet->texture);
   free(sheet);
-}
-
-int destroyanidata(anidata *data) {
-  spritesheet *sheet = data->sheet;
-
-  free(data);
-  
-  if (--sheet->refcount <= 0) {
-    destroyspritesheet(sheet);
-    return 0;
-  }
-
-  return sheet->refcount;
 }
 
 SDL_FRect modrect(const SDL_FRect *rect, const float xmul, const float ymul) {
@@ -81,14 +50,15 @@ bool drawaframe(SDL_Renderer *ren, anidata *data, const float x,
 }
 
 int unlinksheet(spritesheet *sheet) {
-  if (--sheet->refcount <= 0) {
+  if (--(sheet->refcount) <= 0) {
     for (int i = 0; i < sheet->anicount; i++)
       free(sheet->anis[i].name);
     free(sheet->anis);
+    free(sheet->name);
     SDL_DestroyTexture(sheet->texture);
     free(sheet);
     return 0;
   } else {
-    return 0;
+    return sheet->refcount;
   }
 }

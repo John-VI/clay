@@ -28,7 +28,6 @@ int main(int argc, char *argv[]) {
 
   spritesheet *frog;
   spritesheet	*compac;
-  anidata	*font;
 
   SDL_SetHint(SDL_HINT_APP_NAME, progtitle);
   SDL_SetHint(SDL_HINT_APP_ID, progid);
@@ -68,28 +67,16 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
-  compac = loadsheet(ren, "compac.png");
+  compac = loadanisheet("compac.anis", ren);
   if (!compac) {
-    fprintf(stderr, "compac.png could not be loaded!\nSDL_GetError():\n%s\n", SDL_GetError());
+    fprintf(stderr,
+            "compac.png could not be "
+            "loaded!\nSDL_GetError():\n%s\nloadererrstr():\n%s\n",
+            SDL_GetError(), loadererrstr());
     SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Spritesheet load error!",
 			     SDL_GetError(), NULL);
     return 1;
   }
-
-  font = malloc(sizeof(anidata));
-  font->name   = "Compac";
-  font->frames = 96;
-  font->cols   = 96;
-  font->rect.x = 0;
-  font->rect.y = 0;
-  font->rect.w = 8;
-  font->rect.h = 16;
-  font->flags  = 0;
-  font->delay  = 500;
-  // font->ticks  = 0;
-  // font->cframe = 0;
-  font->sheet  = compac;
-  compac->refcount++;
 
   /*** LIFE ***/
   while (1) {
@@ -106,16 +93,16 @@ int main(int argc, char *argv[]) {
     drawaframe(ren, frog->anis, 0, 0, 0);
     drawaframe(ren, frog->anis+1, 0, 0, 0);
     
-    scrputs(ren, font, "\nText processing.\n", 0, 16);
+    scrputs(ren, compac->anis, "\nText processing.\n", 0, 16);
     for (char i = 0; i < 96; i++)
-      scrputc(ren, font, i + ' ', i * 8, 32);
+      scrputc(ren, compac->anis, i + ' ', i * 8, 32);
     
     SDL_RenderPresent(ren);
   }
 
   /*** DEATH ***/
   unlinksheet(frog);
-  // destroyanidata(font);
+  unlinksheet(compac);
   
   SDL_DestroyRenderer(ren);
   SDL_DestroyWindow(win);

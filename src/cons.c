@@ -114,3 +114,8 @@ void prin1(const cons *list) {
     }
   }
 }
+
+// This needed to be quoted somewhere or I was going to explode.
+// Painless MySQL HA, Scalability and Flexibility with Ansible, MHA and ProxySQL
+// Bash, Docker, Ansible, ProxySQL, MHA, and MySQL! Painless! Next talk: carving a pocket watch out of granite with your dick! Painless!
+// -- n-gate.com, 2016

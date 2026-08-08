@@ -80,15 +80,12 @@ cons *ingestdata(FILE *f) {
   int len = 0;
 
   while ((len = getline(&line, &buflen, f)) != -1) {
-    printf("len %d\n\n", len);
-    if (blankp(line)) {
-      fputs("Blank\n\n", stderr);
+    if (blankp(line)) 
       continue;
-    }
 
     char *baseptr = line;
     char *argptr = line;
-    cons *ccell = listpush(&tree, nucons(NULL, NULL));
+    cons *ccell = listpush(&tree, NULL);
     uint32 rank = 0;
 
     do {
@@ -108,13 +105,10 @@ cons *ingestdata(FILE *f) {
       struct anitoken *dptr = (struct anitoken *)ccell->car;
       dptr->type = i;
       dptr->pos = rank++;
-      dptr->data = malloc(sizeof(char) * strlen(baseptr));
+      dptr->data = malloc(sizeof(char) * (strlen(baseptr) + 1));
       strcpy(dptr->data, baseptr);
-
-      fprintf(stderr, "%d %d %s\n", i, rank-1, baseptr);
     } while (argptr);
   }
-  printf("len %d\nerrno %d\n", len, errno);
   free(line);
 
   return tree;
@@ -155,17 +149,12 @@ spritesheet *loadanisheet(const char *path, SDL_Renderer *ren) {
     seterr("The woods burnt down.");
     return NULL;
   }
-  fprintf(stderr, "Hey, asshole\n");
-  princ(tree);
   
   for (cons *ccell = tree; ccell; ccell = ccell->cdr) {
     if (((struct anitoken *)((cons *)ccell->car)->car)->type == BAD) {
       seterr("Invalid field.");
       goto loadanisheet_err;
     }
-    printf("%d/%s %d\n", ((struct anitoken *)((cons *)ccell->car)->car)->type,
-           anitlookup[((struct anitoken *)((cons *)ccell->car)->car)->type].str,
-           llen);
     llen++;
   }
 
@@ -174,7 +163,7 @@ spritesheet *loadanisheet(const char *path, SDL_Renderer *ren) {
     goto loadanisheet_err;
   }
 
-  sheet = malloc(sizeof(spritesheet));
+  sheet = calloc(1, sizeof(spritesheet));
   sheet->anis = calloc((llen - 2) / 6, sizeof(struct anidata));
   sheet->anicount = (llen - 2) / 6;
   sheet->texture = NULL;
@@ -187,9 +176,13 @@ spritesheet *loadanisheet(const char *path, SDL_Renderer *ren) {
     cons *ccell = bcell->car;
     enum aniptype type = ((struct anitoken *)ccell->car)->type;
 
-    printf("%b flags x %d\n", checker, type);
     if (checker & 1 << type) {
       seterr("File malformed.");
+      goto loadanisheet_err;
+    }
+
+    if (anitlookup[type].args && !ccell->cdr) {
+      seterr("Token that should have had an argument didn't.");
       goto loadanisheet_err;
     }
 
@@ -216,6 +209,10 @@ spritesheet *loadanisheet(const char *path, SDL_Renderer *ren) {
       case DATCOLS:
         cdata->cols =
             strtoul(((struct anitoken *)ccell->cdr->car)->data, NULL, 10);
+        if (!cdata->cols) {
+          seterr("Zero columns for data?");
+          goto loadanisheet_err;
+        }
         break;
 
       case DATDLAY:
@@ -270,9 +267,8 @@ spritesheet *loadanisheet(const char *path, SDL_Renderer *ren) {
   }
 
   char textpath[500];
-  strlcpy(textpath, SDL_GetBasePath(), 500);
+  strlcpy(textpath, SDL_GetBasePath() ? SDL_GetBasePath() : "./", 500);
   strlcat(textpath, texturepath, 500);
-  fprintf(stderr, "%p | %s\n%p | %s\n", texturepath, texturepath, textpath, textpath);
   free(texturepath);
 
   sheet->texture = IMG_LoadTexture(ren, textpath);

@@ -7,3 +7,10 @@ columns 1
 rectangle 0 0 797 667
 flags 0
 delay 0
+
+frames 1
+flags 0
+delay 0
+name subfrog
+rectangle 250 250 250 250
+columns 1

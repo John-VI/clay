@@ -125,8 +125,9 @@ strsep(char **stringp, const char *delim)
 ssize_t
 getdelim(char ** restrict lineptr, size_t * restrict n, int delimiter, FILE * restrict stream) {
   // This is POSIXly completely wrong btw.
+  // TODO: Handle what happens if we run out of RAM.
   size_t size;
-  char c;
+  int c;
   ssize_t i;
 
   if (feof(stream))
@@ -160,7 +161,7 @@ getdelim(char ** restrict lineptr, size_t * restrict n, int delimiter, FILE * re
     *n = size;
   // Tell them our new buffer size if they care to know.
 
-  return i;
+  return (feof(stream) && !i) ? -1 : i;
 }
 
 ssize_t
@@ -180,28 +181,44 @@ char
   if (len == 0)
     return calloc(1, sizeof(char));
 
-  char *strptr = str;
-  char *endptr = str + len;
+  const char *strptr = str;
+  const char *endptr = str + len - 1;
 
   while (isspace(*strptr))
     strptr++;
 
-  while (endptr > strptr && isspace(*endptr))
+  while (endptr >= strptr && isspace(*endptr))
     endptr--;
 
-  if (endptr <= strptr)
+  if (endptr < strptr)
     return calloc(1, sizeof(char));
   
-  char *out = malloc(endptr - strptr + 1);
-  memcpy(out, strptr, endptr - strptr);
-  out[endptr-strptr] = '\0';
+  char *out = malloc(endptr - strptr + 2);
+  memcpy(out, strptr, endptr - strptr + 1);
+  out[endptr - strptr + 1] = '\0';
 
   return out;
 }
 
 char
+*strclone(const char *path) {
+		char *fullpath = malloc(sizeof(char) * (strlen(path) + 1));
+		strcpy(fullpath, path);
+		return fullpath;
+}
+
+char
 *elfypath(const char *path) {
-  const size_t pathlen = strlen(SDL_GetBasePath()) + strlen(path) + 1;
+	if (!path && !SDL_GetBasePath())
+		return strclone("./");
+	else if (!path)
+		return strclone(SDL_GetBasePath());
+	else if (!SDL_GetBasePath()) 
+		return strclone(path);
+	
+  const size_t pathlen = strlen(SDL_GetBasePath()) + strlen(path) +
+                         1; // Note: Under SDL3 SDL_GetBasePath()'s pointer is
+                            // not to be freed by the caller.
   char *fullpath = malloc(pathlen);
   strlcpy(fullpath, SDL_GetBasePath(), pathlen);
   strlcat(fullpath, path, pathlen);
@@ -210,6 +227,8 @@ char
 
 bool
 blankp(const char *str) {
+	if (!str)
+		return true;
 	while (*(str))
 		if (!isspace(*str++))
 			return false;

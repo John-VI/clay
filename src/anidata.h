@@ -34,7 +34,7 @@ struct anidata {
 
 typedef struct anidata anidata;
 
-spritesheet *loadsheet(SDL_Renderer *, const char *);
+// spritesheet *loadsheet(SDL_Renderer *, const char *);
 
 bool drawframe(SDL_Renderer *, anidata *, const float, const float,
 	       const uint32);
