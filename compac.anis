@@ -1,0 +1,9 @@
+sheetname compac
+sheettexture compac.png
+
+name font
+frames 96
+columns 96
+rectangle 0 0 8 16
+flags 0
+delay 500

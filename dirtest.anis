@@ -1,0 +1,9 @@
+sheetname dirtest
+sheettexture cross-thought.png
+
+name bg
+frames 5
+columns 1
+rectangle 0 0 800 600
+flags 0
+delay 0

@@ -1,3 +1,4 @@
+#include <SDL3/SDL_scancode.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -9,6 +10,7 @@
 #include <SDL3/SDL_video.h>
 #include <SDL3_image/SDL_image.h>
 #include <SDL3/SDL_filesystem.h>
+#include <SDL3/SDL_keyboard.h>
 
 #include "aniloader.h"
 #include "anidata.h"
@@ -26,8 +28,9 @@ int main(int argc, char *argv[]) {
   SDL_Renderer	*ren;
   SDL_Event	 e;
 
-  spritesheet *frog;
+  spritesheet	*frog;
   spritesheet	*compac;
+  spritesheet   *bg;
 
   SDL_SetHint(SDL_HINT_APP_NAME, progtitle);
   SDL_SetHint(SDL_HINT_APP_ID, progid);
@@ -48,14 +51,7 @@ int main(int argc, char *argv[]) {
     SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Clay Fatal Error!",
 			     SDL_GetError(), NULL);
     return 1;
-  }
-
-  // frogfullpathlen = strlen(SDL_GetBasePath()) + strlen("hey.png") + 1;
-  // frogfullpath = malloc(frogfullpathlen);
-  // strlcpy(frogfullpath, SDL_GetBasePath(), frogfullpathlen);
-  // strlcat(frogfullpath, "hey.png", frogfullpathlen);
-  // frog = IMG_LoadTexture(ren, frogfullpath);
-  // free(frogfullpath);
+  } 
 
   frog = loadanisheet("test.anis", ren);
   if (!frog) {
@@ -78,11 +74,23 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
+  const bool *kbd = SDL_GetKeyboardState(NULL);
+  int bgstate = 0;
+  bg = loadanisheet("dirtest.anis", ren);
+
   /*** LIFE ***/
   while (1) {
     SDL_PollEvent(&e);
     if (e.type == SDL_EVENT_QUIT) {
       break;
+    }
+
+    if (kbd[SDL_SCANCODE_SPACE])
+      bgstate = 0;
+    else if ((*(uint32 *)(kbd + SDL_SCANCODE_RIGHT))) {
+      int i;
+      for (i = 24; ((*(uint32 *)(kbd + SDL_SCANCODE_RIGHT))>>i & 255) == 0 && i >= 0; i -= 8);
+      bgstate = (i / 8) + 1;
     }
 
     SDL_SetRenderDrawColor(ren, 0, 0, 0, 255);
@@ -92,6 +100,8 @@ int main(int argc, char *argv[]) {
 
     drawaframe(ren, frog->anis, 0, 0, 0);
     drawaframe(ren, frog->anis+1, 0, 0, 0);
+
+    drawaframe(ren, bg->anis, 0, 0, bgstate);
     
     scrputs(ren, compac->anis, "\nText processing.\n", 0, 16);
     for (char i = 0; i < 96; i++)
