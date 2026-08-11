@@ -1,4 +1,4 @@
-#include <SDL3/SDL_scancode.h>
+#include <SDL3/SDL_oldnames.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -11,6 +11,7 @@
 #include <SDL3_image/SDL_image.h>
 #include <SDL3/SDL_filesystem.h>
 #include <SDL3/SDL_keyboard.h>
+#include <SDL3/SDL_timer.h>
 
 #include "aniloader.h"
 #include "anidata.h"
@@ -28,9 +29,15 @@ int main(int argc, char *argv[]) {
   SDL_Renderer	*ren;
   SDL_Event	 e;
 
+  const bool *kbd;
+
   spritesheet	*frog;
   spritesheet	*compac;
   spritesheet   *bg;
+
+  uint64 prevticks = 0;
+  int bgstate = 0;
+  char fps[5] = "XX";
 
   SDL_SetHint(SDL_HINT_APP_NAME, progtitle);
   SDL_SetHint(SDL_HINT_APP_ID, progid);
@@ -74,9 +81,11 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
-  const bool *kbd = SDL_GetKeyboardState(NULL);
-  int bgstate = 0;
+  kbd = SDL_GetKeyboardState(NULL);
   bg = loadanisheet("dirtest.anis", ren);
+
+  printf("Startup took %llums.\n", SDL_GetTicks());
+  prevticks = SDL_GetTicks();
 
   /*** LIFE ***/
   while (1) {
@@ -89,7 +98,8 @@ int main(int argc, char *argv[]) {
       bgstate = 0;
     else if ((*(uint32 *)(kbd + SDL_SCANCODE_RIGHT))) {
       int i;
-      for (i = 24; ((*(uint32 *)(kbd + SDL_SCANCODE_RIGHT))>>i & 255) == 0 && i >= 0; i -= 8);
+      for (i = 24; ((*(uint32 *)(kbd + SDL_SCANCODE_RIGHT))>>i & 255) == 0 && i >= 0;
+	   i -= 8);
       bgstate = (i / 8) + 1;
     }
 
@@ -106,8 +116,13 @@ int main(int argc, char *argv[]) {
     scrputs(ren, compac->anis, "\nText processing.\n", 0, 16);
     for (char i = 0; i < 96; i++)
       scrputc(ren, compac->anis, i + ' ', i * 8, 32);
+
+    scrputs(ren, compac->anis, fps, 0, 0);
     
     SDL_RenderPresent(ren);
+
+    snprintf(fps, 5, "%llu", (prevticks - SDL_GetTicks()) / 1000);
+    prevticks = SDL_GetTicks();
   }
 
   /*** DEATH ***/
