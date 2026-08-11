@@ -4,7 +4,7 @@
 #include "alias_t.h"
 
 typedef struct cons {
-    void *car;
+    void	*car;
     struct cons *cdr;
 } cons;
 

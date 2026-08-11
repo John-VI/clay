@@ -36,15 +36,15 @@ enum argtype {
 };
 
 struct anitoken {
-  enum aniptype type;
-  uint32 pos;
-  char *data;
+  enum aniptype	 type;
+  uint32	 pos;
+  char		*data;
 };
 
 struct aniextok {
-  const char *str;
-  const uint32 args;
-  const enum argtype argtype;
+  const char		*str;
+  const uint32		 args;
+  const enum argtype	 argtype;
 };
 
 const struct aniextok anitlookup[ARG+1] = {
