@@ -71,6 +71,18 @@ void *delnthpop(cons **list, unsigned int i) {
   }
 }
 
+void *delcons(cons *prev, cons **ccons) {
+  cons *ncons = (*ccons)->cdr;
+  if (prev) {
+    prev->cdr = ncons;
+  }
+
+  void *ret = (*ccons)->car;
+  free(*ccons);
+  *ccons = ncons;
+  return ret;
+}
+
 void princ(const cons *list) {
   if (!list) {
     fputs("NULL", stderr);

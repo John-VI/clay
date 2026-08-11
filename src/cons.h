@@ -16,7 +16,9 @@ cons *listlast(cons *);
 
 cons *nucons(void *, void *);
 cons *listpush(cons **, void *);
+
 void *delnthpop(cons **, unsigned int);
+void *delcons(cons *prev, cons **);
 
 uint32 listlen(cons *);
 
