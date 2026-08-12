@@ -196,8 +196,8 @@ int main(int argc, char *argv[]) {
     
     SDL_RenderPresent(ren);
 
-    snprintf(fps, 5, "%llu", (prevticks - SDL_GetTicks()) / 1000);
-    snprintf(lstat, 250, "sdeck len %u, sd %llu\nticks %llu, %d", listlen(sdeck), spawndelay, ticks, freecount);
+    snprintf(fps, 5, "%lu", ticks ? 1000 / ticks : 0);
+    snprintf(lstat, 250, "sdeck len %u, sd %lu\nticks %lu, %d", listlen(sdeck), spawndelay, ticks, freecount);
 
     ticks = SDL_GetTicks() - prevticks;
     prevticks = SDL_GetTicks();
