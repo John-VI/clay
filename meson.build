@@ -12,7 +12,7 @@ endif
 
 # add_project_arguments('-O3', language: 'c')
 
-executable('clay', ['src/main.c', 'src/bsd.c', 'src/anidata.c', 'src/text.c', 'src/cons.c', 'src/aniloader.c'],
+executable('clay', ['src/main.c', 'src/bsd.c', 'src/anidata.c', 'src/text.c', 'src/cons.c', 'src/aniloader.c', 'src/menu.c'],
 		   win_subsystem: 'windows',
 		   dependencies: [sdl3_dep, sdl3_image_dep],
 		   install: false,
