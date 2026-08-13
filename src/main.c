@@ -7,11 +7,12 @@
 #include <SDL3/SDL_error.h>
 #include <SDL3/SDL_messagebox.h>
 #include <SDL3/SDL_video.h>
-#include <SDL3_image/SDL_image.h>
 #include <SDL3/SDL_filesystem.h>
 #include <SDL3/SDL_keyboard.h>
 #include <SDL3/SDL_timer.h>
 #include <SDL3/SDL_stdinc.h>
+
+#include <SDL3_image/SDL_image.h>
 
 #include "aniloader.h"
 #include "anidata.h"
@@ -196,8 +197,9 @@ int main(int argc, char *argv[]) {
     
     SDL_RenderPresent(ren);
 
-    snprintf(fps, 5, "%lu", ticks ? 1000 / ticks : 0);
-    snprintf(lstat, 250, "sdeck len %u, sd %lu\nticks %lu, %d", listlen(sdeck), spawndelay, ticks, freecount);
+    snprintf(fps, 5, "%llu", ticks ? 1000 / ticks : 0);
+    snprintf(lstat, 250, "sdeck len %u, sd %llu\nticks %llu, %d",
+	     listlen(sdeck), spawndelay, ticks, freecount);
 
     ticks = SDL_GetTicks() - prevticks;
     prevticks = SDL_GetTicks();
