@@ -54,6 +54,8 @@ int main(int argc, char *argv[]) {
   int bgstate = 0;
   uint64 spawndelay = 0;
   char fps[5] = "XX";
+  uint64 tickhist[500] = { 0 };
+  int tickcell = 0;
   char lstat[250] = "";
 
   int freecount = 0;
@@ -166,7 +168,7 @@ int main(int argc, char *argv[]) {
           listpush(&sdeck, fly);
         }
 
-        spawndelay -= 500;
+        spawndelay -= 200;
       }
 
       while (ccons) {
@@ -217,10 +219,19 @@ int main(int argc, char *argv[]) {
 
     SDL_RenderPresent(ren);
 
-    snprintf(fps, 5, "%llu", ticks ? 1000 / ticks : 0);
+    double avgfps = 0;
+    for (int i = 0; i < 500; i++) {
+      avgfps += (tickhist[i] - avgfps) / 500;
+      snprintf(fps, 5, "%lf", avgfps ? 1000 / avgfps : 0);
+    }
+    
     snprintf(lstat, 250, "sdeck len %u, sd %llu\nticks %llu, %d",
              listlen(sdeck), spawndelay, ticks, freecount);
 
+    tickhist[tickcell++] = ticks;
+    if (tickcell >= 500)
+      tickcell = 0;
+    
     ticks = SDL_GetTicks() - prevticks;
     prevticks = SDL_GetTicks();
   }
