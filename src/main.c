@@ -135,7 +135,7 @@ int main(int argc, char *argv[]) {
         bgstate = (i / 8) + 1;
       }
 
-      if ((spawndelay += ticks) >= 200) {
+      if ((spawndelay += ticks) >= 20) {
         signed char clr = SDL_rand(3) - 1;
         signed char cud = SDL_rand(3) - 1;
 
@@ -168,7 +168,7 @@ int main(int argc, char *argv[]) {
           listpush(&sdeck, fly);
         }
 
-        spawndelay -= 200;
+        spawndelay -= 20;
       }
 
       while (ccons) {
